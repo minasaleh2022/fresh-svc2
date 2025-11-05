@@ -1,0 +1,13 @@
+name: shared
+description: Minimal shared package for Fresh Admin Web (models + services stubs)
+version: 0.0.1
+publish_to: 'none'
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  uses-material-design: false
