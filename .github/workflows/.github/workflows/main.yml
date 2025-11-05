@@ -1,14 +1,16 @@
-name: build-and-deploy-web-only
+name: build-and-deploy-flutter-web
 on:
   push:
     branches: [ main ]
   workflow_dispatch:
 
 jobs:
-  build-web:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
@@ -19,22 +21,27 @@ jobs:
       - name: Enable Flutter Web
         run: flutter config --enable-web
 
-      - name: Get dependencies and build web
-        run: |
-          cd apps/admin_web
-          flutter pub get
-          flutter build web --release
+      - name: Get dependencies
+        run: flutter pub get
 
-      - name: Upload web artifact
+      - name: Build Flutter Web
+        run: flutter build web --release
+
+      - name: Upload Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: apps/admin_web/build/web
+          path: build/web
 
   deploy:
-    needs: build-web
+    needs: build
     permissions:
       pages: write
       id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/deploy-pages@v4
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
